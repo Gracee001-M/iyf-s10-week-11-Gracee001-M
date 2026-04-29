@@ -30,3 +30,22 @@ router.post('/:postId/comments', commentsController.createComment);
 router.delete('/:postId/comments/:commentId', commentsController.deleteComment);
 
 module.exports = router;
+
+const express = require('express');
+const router = express.Router();
+const postsController = require('../controllers/postsController');
+const { protect, optionalAuth, restrictTo } = require('../middleware/auth');
+
+// Public routes
+router.get('/', postsController.getAllPosts);
+router.get('/:id', postsController.getPostById);
+
+// Protected routes (requires login)
+router.post('/', protect, postsController.createPost);
+router.put('/:id', protect, postsController.updatePost);
+router.delete('/:id', protect, postsController.deletePost);
+
+// Admin-only route
+router.delete('/:id/force', protect, restrictTo('admin'), postsController.forceDelete);
+
+module.exports = router;
